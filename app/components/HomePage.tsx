@@ -1,3 +1,5 @@
+"use client";
+
 import { TodoListProps } from "../types/todo";
 import InputTodoContainer from "../containers/InputTodoContainer";
 import SearchBarContainer from "../containers/SearchBarContainer";

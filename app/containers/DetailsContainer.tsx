@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter, useParams } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteTodo, editTodo } from '../redux/todoSlice';
 import { RootStateProps, TodoProps } from '../types/todo';
@@ -9,7 +9,8 @@ import DetailsView from '@/app/components/DetailsView';
 
 const DetailsContainer = () => {
   const router = useRouter();
-  const { id } = router.query;
+  const params = useParams();
+  const id = params.id as string;
   const dispatch = useDispatch();
 
   const todo = useSelector((state: RootStateProps) =>
@@ -26,7 +27,7 @@ const DetailsContainer = () => {
 
   const handleSave = () => {
     if (editText.trim() && id) {
-      dispatch(editTodo({ id: id.toString(), name: editText }));
+      dispatch(editTodo({ id, name: editText }));
       router.push('/');
       setTimeout(() => {
         alert('Saved');
@@ -36,9 +37,7 @@ const DetailsContainer = () => {
 
   const handleDelete = () => {
     if (window.confirm('Are you sure you want to delete this todo?')) {
-      if (id) {
-        dispatch(deleteTodo(id.toString()));
-      }
+      dispatch(deleteTodo(id));
       router.push('/');
       setTimeout(() => {
         alert('Deleted');

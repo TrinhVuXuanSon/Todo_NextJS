@@ -1,8 +1,10 @@
-import { useRouter } from 'next/navigation';
-import { useDispatch } from 'react-redux';
-import { toggleTodo } from '../redux/todoSlice';
-import TodoItem from '../components/TodoItem';
-import { TodoItemProps } from '@/app/types/todo';
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { toggleTodo } from "../redux/todoSlice";
+import TodoItem from "../components/TodoItem";
+import { TodoItemProps } from "@/app/types/todo";
 
 const TodoItemContainer = ({ todo }: TodoItemProps) => {
   const router = useRouter();

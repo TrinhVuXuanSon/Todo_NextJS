@@ -1,9 +1,9 @@
-import { Providers } from '@/app/app/providers';
-import '@/app/globals.css';
+import { Providers } from "./providers";
+import "./globals.css";
 
 export const metadata = {
-  title: 'Todo App',
-  description: 'Todo application built with Next.js and Redux Toolkit',
+  title: "Todo App",
+  description: "Todo application built with Next.js and Redux Toolkit",
 };
 
 export default function RootLayout({
