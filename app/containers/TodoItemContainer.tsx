@@ -11,7 +11,7 @@ const TodoItemContainer = ({ todo }: TodoItemProps) => {
   const dispatch = useDispatch();
 
   const handleToggle = () => dispatch(toggleTodo(todo.id));
-  const handleDetails = () => router.push(`/details/${todo.id}`);
+  const handleDetails = () => router.push(`/pages/details/${todo.id}`);
 
   return (
     <TodoItem todo={todo} onToggle={handleToggle} onDetails={handleDetails} />
