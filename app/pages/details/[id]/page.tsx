@@ -2,6 +2,8 @@
 
 import DetailsContainer from "@/app/containers/DetailsContainer";
 
-export default function DetailsPage() {
+function DetailsPage() {
   return <DetailsContainer />;
 }
+
+export default DetailsPage;
