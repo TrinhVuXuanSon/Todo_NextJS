@@ -1,4 +1,4 @@
-import { TodoItemViewProps } from "../types/todo";
+import { TodoItemViewProps } from "../../types/todo";
 
 const TodoItemView = ({ todo, onToggle, onDetails }: TodoItemViewProps) => (
   <div className="my-2 flex items-center gap-2 p-1 border rounded-md hover:bg-gray-100">

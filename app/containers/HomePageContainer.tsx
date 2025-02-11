@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from "react-redux";
 import { HomePageProps } from "../types/todo";
 import { toggleTodo, deleteTodo, editTodo } from "../redux/todoSlice";
-import HomePage from "../components/HomePage";
+import HomePage from "../components/todo/HomePage";
 
 const HomePageContainer = () => {
   const { todos, searchTerm } = useSelector(

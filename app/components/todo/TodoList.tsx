@@ -1,5 +1,5 @@
-import { TodoListProps } from "../types/todo";
-import TodoItemContainer from "../containers/TodoItemContainer";
+import { TodoListProps } from "../../types/todo";
+import TodoItemContainer from "../../containers/TodoItemContainer";
 
 const TodoList = ({ todos, onToggle, onDelete, onEdit }: TodoListProps) => {
   const incompleteTodos = todos.filter((todo) => !todo.completed);
@@ -8,7 +8,7 @@ const TodoList = ({ todos, onToggle, onDelete, onEdit }: TodoListProps) => {
   return (
     <div>
       <div className="my-4">
-        <h2 className="text-lg font-semibold my-2"> 
+        <h2 className="text-lg font-semibold my-2">
           Đang thực hiện ({incompleteTodos.length})
         </h2>
         {incompleteTodos.map((todo) => (

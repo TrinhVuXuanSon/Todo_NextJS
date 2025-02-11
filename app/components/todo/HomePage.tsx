@@ -1,8 +1,8 @@
 "use client";
 
-import { TodoListProps } from "../types/todo";
-import InputTodoContainer from "../containers/InputTodoContainer";
-import SearchBarContainer from "../containers/SearchBarContainer";
+import { TodoListProps } from "../../types/todo";
+import InputTodoContainer from "../../containers/InputTodoContainer";
+import SearchBarContainer from "../../containers/SearchBarContainer";
 import TodoList from "./TodoList";
 
 const HomePage = ({ todos, onToggle, onDelete, onEdit }: TodoListProps) => (

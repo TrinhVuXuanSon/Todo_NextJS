@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setSearchTerm } from "../redux/todoSlice";
 import useDebounce from "../hooks/useDebounce";
-import SearchBar from "../components/SearchBar";
+import SearchBar from "../components/todo/SearchBar";
 
 const SearchBarContainer = () => {
   const [searchTerm, setLocalSearchTerm] = useState("");

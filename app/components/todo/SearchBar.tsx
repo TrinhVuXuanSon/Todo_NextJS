@@ -1,4 +1,4 @@
-import { SearchBarViewProps } from "../types/todo";
+import { SearchBarViewProps } from "../../types/todo";
 
 const SearchBar = ({ searchTerm, onSearchChange }: SearchBarViewProps) => (
   <div className="mt-2">

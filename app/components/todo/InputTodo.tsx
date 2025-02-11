@@ -1,4 +1,4 @@
-import { InputTodoViewProps } from "../types/todo";
+import { InputTodoViewProps } from "../../types/todo";
 
 const InputTodoView = ({ text, onTextChange, onAdd }: InputTodoViewProps) => (
   <div className="flex gap-2">
