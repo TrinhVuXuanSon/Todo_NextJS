@@ -7,9 +7,9 @@ const InputTodoContainer = () => {
   const [text, setText] = useState("");
   const dispatch = useDispatch();
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (text.trim()) {
-      dispatch(addTodo(text));
+      await dispatch(addTodo(text) as any);
       setText("");
     }
   };

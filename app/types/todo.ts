@@ -1,8 +1,9 @@
-export type TodoProps = {
+export interface TodoProps {
   id: string;
   name: string;
   completed: boolean;
-};
+  created_at?: string;
+}
 
 export interface TodoItemProps {
   todo: TodoProps;
@@ -36,6 +37,8 @@ export interface HomePageProps {
   todos: {
     todos: TodoProps[];
     searchTerm: string;
+    status: "idle" | "loading" | "succeeded" | "failed";
+    error: string | null;
   };
   onLogout: () => void;
 }
@@ -43,6 +46,8 @@ export interface HomePageProps {
 export interface TodoSliceProps {
   todos: TodoProps[];
   searchTerm: string;
+  status: "idle" | "loading" | "succeeded" | "failed";
+  error: string | null;
 }
 
 export interface RootStateProps {

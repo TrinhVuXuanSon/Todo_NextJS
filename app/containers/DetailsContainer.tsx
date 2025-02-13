@@ -27,7 +27,7 @@ const DetailsContainer = () => {
 
   const handleSave = () => {
     if (editText.trim() && id) {
-      dispatch(editTodo({ id, name: editText }));
+      dispatch(editTodo({ id, name: editText }) as any);
       router.push("/");
       setTimeout(() => {
         alert("Saved");
@@ -37,7 +37,7 @@ const DetailsContainer = () => {
 
   const handleDelete = () => {
     if (window.confirm("Are you sure you want to delete this todo?")) {
-      dispatch(deleteTodo(id));
+      dispatch(deleteTodo(id) as any);
       router.push("/");
       setTimeout(() => {
         alert("Deleted");

@@ -10,7 +10,9 @@ const TodoItemContainer = ({ todo }: TodoItemProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  const handleToggle = () => dispatch(toggleTodo(todo.id));
+  const handleToggle = () => {
+    dispatch(toggleTodo(todo.id) as any);
+  };
   const handleDetails = () => router.push(`/pages/details/${todo.id}`);
 
   return (

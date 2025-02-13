@@ -1,62 +1,131 @@
-"use client";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { supabase } from "../lib/supabaseClient";
+import { TodoSliceProps } from "../types/todo";
 
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { v4 as uuidv4 } from "uuid";
-import { TodoSliceProps } from "@/app/types/todo";
+export const fetchTodos = createAsyncThunk("todos/fetchTodos", async () => {
+  const { data, error } = await supabase
+    .from("todos")
+    .select("*")
+
+  if (error) throw error;
+  return data;
+});
+
+export const addTodo = createAsyncThunk(
+  "todos/addTodo",
+  async (name: string) => {
+    const { data, error } = await supabase
+      .from("todos")
+      .insert([{ name, completed: false }])
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+);
+
+export const toggleTodo = createAsyncThunk(
+  "todos/toggleTodo",
+  async (id: string) => {
+    const { data: currentTodo } = await supabase
+      .from("todos")
+      .select("completed")
+      .eq("id", id)
+      .single();
+
+    const { data, error } = await supabase
+      .from("todos")
+      .update({ completed: !currentTodo?.completed })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+);
+
+export const deleteTodo = createAsyncThunk(
+  "todos/deleteTodo",
+  async (id: string) => {
+    const { error } = await supabase.from("todos").delete().eq("id", id);
+
+    if (error) throw error;
+    return id;
+  }
+);
+
+export const editTodo = createAsyncThunk(
+  "todos/editTodo",
+  async ({ id, name }: { id: string; name: string }) => {
+    const { data, error } = await supabase
+      .from("todos")
+      .update({ name })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+);
 
 const initialState: TodoSliceProps = {
   todos: [],
   searchTerm: "",
+  status: "idle",
+  error: null,
 };
 
-export const todoSlice = createSlice({
+const todoSlice = createSlice({
   name: "todos",
   initialState,
   reducers: {
-    addTodo: (state, action: PayloadAction<string>) => {
-      return {
-        ...state,
-        todos: [
-          { id: uuidv4(), name: action.payload, completed: false },
-          ...state.todos,
-        ],
-      };
+    setSearchTerm: (state, action) => {
+      state.searchTerm = action.payload;
     },
-    toggleTodo: (state, action: PayloadAction<string>) => {
-      return {
-        ...state,
-        todos: state.todos.map((todo) =>
-          todo.id === action.payload
-            ? { ...todo, completed: !todo.completed }
-            : todo
-        ),
-      };
-    },
-    deleteTodo: (state, action: PayloadAction<string>) => {
-      return {
-        ...state,
-        todos: state.todos.filter((todo) => todo.id !== action.payload),
-      };
-    },
-    editTodo: (state, action: PayloadAction<{ id: string; name: string }>) => {
-      return {
-        ...state,
-        todos: state.todos.map((todo) =>
-          todo.id === action.payload.id
-            ? { ...todo, name: action.payload.name }
-            : todo
-        ),
-      };
-    },
-    setSearchTerm: (state, action: PayloadAction<string>) => {
-      return {
-        ...state,
-        searchTerm: action.payload,
-      };
-    },
+  },
+  extraReducers: (builder) => {
+    builder
+      // Fetch todos
+      .addCase(fetchTodos.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchTodos.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.todos = action.payload;
+      })
+      .addCase(fetchTodos.rejected, (state, action) => {
+        state.status = "failed";
+        // state.error = action.error.message;
+      })
+      // Add todo
+      .addCase(addTodo.fulfilled, (state, action) => {
+        state.todos.unshift(action.payload);
+      })
+      // Toggle todo
+      .addCase(toggleTodo.fulfilled, (state, action) => {
+        const todo = state.todos.find((todo) => todo.id === action.payload.id);
+        if (todo) {
+          todo.completed = action.payload.completed;
+        }
+      })
+      // Delete todo
+      .addCase(deleteTodo.fulfilled, (state, action) => {
+        state.todos = state.todos.filter((todo) => todo.id !== action.payload);
+      })
+      // Edit todo
+      .addCase(editTodo.fulfilled, (state, action) => {
+        const index = state.todos.findIndex(
+          (todo) => todo.id === action.payload.id
+        );
+        if (index !== -1) {
+          state.todos[index] = action.payload;
+        }
+      });
   },
 });
 
-export const { addTodo, toggleTodo, deleteTodo, editTodo, setSearchTerm } =
-  todoSlice.actions;
+export const { setSearchTerm } = todoSlice.actions;
 export default todoSlice.reducer;
