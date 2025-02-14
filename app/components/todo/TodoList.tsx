@@ -1,104 +1,112 @@
 "use client";
 
-import { TodoListProps } from "../../types/todo";
-import { useRouter } from "next/navigation";
-import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-  TableCell,
-} from "@/app/components/ui/table";
+import TodoTable from "../ui/TodoTable";
+import Modal from "../ui/Modal";
+import { TodoProps } from "../../types/todo";
 
-const TodoList = ({ todos, onToggle, onDelete, onEdit }: TodoListProps) => {
-  const router = useRouter();
+interface TodoListViewProps {
+  todos: TodoProps[];
+  onToggle: (id: string) => void;
+  isEditModalOpen: boolean;
+  isDeleteModalOpen: boolean;
+  selectedTodo: { id: string; name: string } | null;
+  editedName: string;
+  onEditNameChange: (value: string) => void;
+  onEditClick: (todo: TodoProps) => void;
+  onDeleteClick: (todo: TodoProps) => void;
+  onEditSubmit: () => void;
+  onDeleteSubmit: () => void;
+  onCloseModals: () => void;
+}
+
+const TodoList = ({
+  todos,
+  onToggle,
+  isEditModalOpen,
+  isDeleteModalOpen,
+  editedName,
+  onEditNameChange,
+  onEditClick,
+  onDeleteClick,
+  onEditSubmit,
+  onDeleteSubmit,
+  onCloseModals,
+}: TodoListViewProps) => {
   const incompleteTodos = todos.filter((todo) => !todo.completed);
   const completedTodos = todos.filter((todo) => todo.completed);
 
-  const handleDetails = (todoId: string) => {
-    router.push(`/pages/details/${todoId}`);
-  };
-
   return (
     <div className="space-y-8">
-      <div>
-        <h2 className="text-lg font-semibold mb-2">
-          Danh sách công việc đang thực hiện ({incompleteTodos.length})
-        </h2>
-        <Table className="w-full border border-gray-200">
-          <TableHeader className="bg-gray-100">
-            <TableRow>
-              <TableHead className="w-[100px] text-center">Status</TableHead>
-              <TableHead>Tên công việc</TableHead>
-              <TableHead className="w-[150px]">Thao tác</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {incompleteTodos.map((todo) => (
-              <TableRow key={todo.id}>
-                <TableCell className="text-center">
-                  <input
-                    type="checkbox"
-                    checked={todo.completed}
-                    onChange={() => onToggle(todo.id)}
-                    className="w-4 h-4 cursor-pointer"
-                  />
-                </TableCell>
-                <TableCell>{todo.name}</TableCell>
-                <TableCell>
-                  <button
-                    onClick={() => handleDetails(todo.id)}
-                    className="px-3 py-1 text-blue-500 hover:bg-blue-100 text-sm"
-                  >
-                    Details
-                  </button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-
+      <TodoTable
+        todos={incompleteTodos}
+        title="Danh sách công việc đang thực hiện"
+        onToggle={onToggle}
+        onEdit={onEditClick}
+        onDelete={onDeleteClick}
+      />
       {completedTodos.length > 0 && (
-        <div>
-          <h2 className="text-lg font-semibold mb-2">
-            Danh sách công việc đã hoàn thành ({completedTodos.length})
-          </h2>
-          <Table className="w-full border border-gray-200">
-            <TableHeader className="bg-gray-100">
-              <TableRow>
-                <TableHead className="w-[100px] text-center">Status</TableHead>
-                <TableHead>Tên công việc</TableHead>
-                <TableHead className="w-[150px]">Thao tác</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {completedTodos.map((todo) => (
-                <TableRow key={todo.id}>
-                  <TableCell className="text-center">
-                    <input
-                      type="checkbox"
-                      checked={todo.completed}
-                      onChange={() => onToggle(todo.id)}
-                      className="w-4 h-4 cursor-pointer"
-                    />
-                  </TableCell>
-                  <TableCell>{todo.name}</TableCell>
-                  <TableCell>
-                    <button
-                      onClick={() => handleDetails(todo.id)}
-                      className="px-3 py-1 text-blue-500 hover:bg-blue-100 text-sm"
-                    >
-                      Details
-                    </button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        <TodoTable
+          todos={completedTodos}
+          title="Danh sách công việc đã hoàn thành"
+          onToggle={onToggle}
+          onEdit={onEditClick}
+          onDelete={onDeleteClick}
+        />
       )}
+
+      <Modal isOpen={isEditModalOpen} onClose={onCloseModals} title="Edit Task">
+        <div className="mb-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <label htmlFor="name" className="text-right">
+              Name
+            </label>
+            <input
+              id="name"
+              value={editedName}
+              onChange={(e) => onEditNameChange(e.target.value)}
+              className="col-span-3 border rounded px-3 py-2"
+            />
+          </div>
+        </div>
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={onCloseModals}
+            className="px-4 py-2 border rounded hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onEditSubmit}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Save changes
+          </button>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={onCloseModals}
+        title="Are you sure?"
+      >
+        <p className="text-gray-500">
+          Bạn có chắc chắn muốn xoá công việc này không?
+        </p>
+        <div className="flex mt-4 justify-end gap-2">
+          <button
+            onClick={onCloseModals}
+            className="px-4 py-2 border rounded hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onDeleteSubmit}
+            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+          >
+            Delete
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 };

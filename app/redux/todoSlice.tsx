@@ -3,10 +3,7 @@ import { supabase } from "../lib/supabaseClient";
 import { TodoSliceProps } from "../types/todo";
 
 export const fetchTodos = createAsyncThunk("todos/fetchTodos", async () => {
-  const { data, error } = await supabase
-    .from("todos")
-    .select("*")
-
+  const { data, error } = await supabase.from("todos").select("*");
   if (error) throw error;
   return data;
 });
@@ -19,7 +16,6 @@ export const addTodo = createAsyncThunk(
       .insert([{ name, completed: false }])
       .select()
       .single();
-
     if (error) throw error;
     return data;
   }
@@ -28,15 +24,17 @@ export const addTodo = createAsyncThunk(
 export const toggleTodo = createAsyncThunk(
   "todos/toggleTodo",
   async (id: string) => {
-    const { data: currentTodo } = await supabase
+    const { data: currentTodo, error: fetchError } = await supabase
       .from("todos")
       .select("completed")
       .eq("id", id)
       .single();
 
+    if (fetchError || !currentTodo) throw new Error("Todo not found");
+
     const { data, error } = await supabase
       .from("todos")
-      .update({ completed: !currentTodo?.completed })
+      .update({ completed: !currentTodo.completed })
       .eq("id", id)
       .select()
       .single();
@@ -46,15 +44,11 @@ export const toggleTodo = createAsyncThunk(
   }
 );
 
-export const deleteTodo = createAsyncThunk(
-  "todos/deleteTodo",
-  async (id: string) => {
-    const { error } = await supabase.from("todos").delete().eq("id", id);
-
-    if (error) throw error;
-    return id;
-  }
-);
+export const deleteTodo = createAsyncThunk("todos/deleteTodo", async (id: string) => {
+  const { error } = await supabase.from("todos").delete().eq("id", id);
+  if (error) throw error;
+  return id;
+});
 
 export const editTodo = createAsyncThunk(
   "todos/editTodo",
@@ -65,7 +59,6 @@ export const editTodo = createAsyncThunk(
       .eq("id", id)
       .select()
       .single();
-
     if (error) throw error;
     return data;
   }
@@ -88,7 +81,6 @@ const todoSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Fetch todos
       .addCase(fetchTodos.pending, (state) => {
         state.status = "loading";
       })
@@ -98,28 +90,22 @@ const todoSlice = createSlice({
       })
       .addCase(fetchTodos.rejected, (state, action) => {
         state.status = "failed";
-        // state.error = action.error.message;
+        state.error = action.error.message ?? "Error fetching todos";
       })
-      // Add todo
       .addCase(addTodo.fulfilled, (state, action) => {
         state.todos.unshift(action.payload);
       })
-      // Toggle todo
       .addCase(toggleTodo.fulfilled, (state, action) => {
         const todo = state.todos.find((todo) => todo.id === action.payload.id);
         if (todo) {
           todo.completed = action.payload.completed;
         }
       })
-      // Delete todo
       .addCase(deleteTodo.fulfilled, (state, action) => {
         state.todos = state.todos.filter((todo) => todo.id !== action.payload);
       })
-      // Edit todo
       .addCase(editTodo.fulfilled, (state, action) => {
-        const index = state.todos.findIndex(
-          (todo) => todo.id === action.payload.id
-        );
+        const index = state.todos.findIndex((todo) => todo.id === action.payload.id);
         if (index !== -1) {
           state.todos[index] = action.payload;
         }

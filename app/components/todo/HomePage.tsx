@@ -3,7 +3,7 @@
 import { TodoListProps } from "../../types/todo";
 import InputTodoContainer from "../../containers/InputTodoContainer";
 import SearchBarContainer from "../../containers/SearchBarContainer";
-import TodoList from "./TodoList";
+import TodoListContainer from "../../containers/TodoListContainer";
 
 const HomePage = ({
   todos,
@@ -28,7 +28,7 @@ const HomePage = ({
         <SearchBarContainer />
       </div>
 
-      <TodoList
+      <TodoListContainer
         todos={todos}
         onToggle={onToggle}
         onDelete={onDelete}

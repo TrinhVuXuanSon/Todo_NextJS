@@ -2,18 +2,19 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { deleteTodo, editTodo } from "../redux/todoSlice";
-import { RootStateProps, TodoProps } from "../types/todo";
 import DetailsView from "@/app/components/todo/DetailsView";
+import { TodoProps } from "../types/todo";
 
 const DetailsContainer = () => {
   const router = useRouter();
   const params = useParams();
-  const id = params.id as string;
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const todo = useSelector((state: RootStateProps) =>
+  const id = typeof params.id === "string" ? params.id : "";
+
+  const todo = useAppSelector((state) =>
     state.todos.todos.find((todo: TodoProps) => todo.id === id)
   );
 
@@ -25,9 +26,16 @@ const DetailsContainer = () => {
     }
   }, [todo]);
 
-  const handleSave = () => {
+  useEffect(() => {
+    if (!todo && id) {
+      alert("Todo not found!");
+      router.push("/");
+    }
+  }, [todo, id, router]);
+
+  const handleSave = async () => {
     if (editText.trim() && id) {
-      dispatch(editTodo({ id, name: editText }) as any);
+      await dispatch(editTodo({ id, name: editText })).unwrap(); // 🔹 Dùng unwrap() để bắt lỗi
       router.push("/");
       setTimeout(() => {
         alert("Saved");
@@ -35,9 +43,9 @@ const DetailsContainer = () => {
     }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this todo?")) {
-      dispatch(deleteTodo(id) as any);
+      await dispatch(deleteTodo(id)).unwrap();
       router.push("/");
       setTimeout(() => {
         alert("Deleted");

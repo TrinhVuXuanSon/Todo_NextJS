@@ -7,9 +7,9 @@ export interface TodoProps {
 
 export interface TodoItemProps {
   todo: TodoProps;
-  onToggle: (id: number) => void;
-  onDelete: (id: number) => void;
-  onEdit: (id: number, newName: string) => void;
+  onToggle: (id: string) => void;
+  onDelete: (id: string) => void;
+  onEdit: (id: string, newName: string) => void;
 }
 
 export interface TodoListProps {
@@ -82,7 +82,12 @@ export interface TodoItemViewProps {
   onDetails: () => void;
 }
 
+export interface User {
+  id?: string;
+  name: string;
+}
+
 export interface AuthState {
-  user: any;
+  user: User | null;
   token: string | null;
 }

@@ -1,15 +1,17 @@
+"use client";
+
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useAppDispatch } from "../redux/hooks";
 import { addTodo } from "../redux/todoSlice";
 import InputTodo from "../components/todo/InputTodo";
 
 const InputTodoContainer = () => {
   const [text, setText] = useState("");
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const handleAdd = async () => {
     if (text.trim()) {
-      await dispatch(addTodo(text) as any);
+      await dispatch(addTodo(text));
       setText("");
     }
   };

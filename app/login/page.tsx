@@ -30,12 +30,19 @@ function LoginPage() {
       if (result?.ok) {
         const session = await getSession();
 
-        dispatch(
-          setCredentials({
-            user: session?.user,
-            token: session?.user?.name || "",
-          })
-        );
+        if (session?.user) {
+          const user = {
+            name: session.user.name || "",
+          };
+
+          dispatch(
+            setCredentials({
+              user,
+              token: session.user.name || "",
+            })
+          );
+        }
+
         router.push("/");
       }
     } catch {

@@ -1,8 +1,8 @@
+"use client";
+
 import { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { HomePageProps } from "../types/todo";
 import {
   fetchTodos,
   toggleTodo,
@@ -11,34 +11,37 @@ import {
 } from "../redux/todoSlice";
 import { logout } from "../redux/authSlice";
 import HomePage from "../components/todo/HomePage";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 
 const HomePageContainer = () => {
-  const { todos, searchTerm, status, error } = useSelector(
-    (state: HomePageProps) => state.todos
+  const { todos, searchTerm, status, error } = useAppSelector(
+    (state) => state.todos
   );
   const router = useRouter();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (status === "idle") {
-      dispatch(fetchTodos() as any);
+      dispatch(fetchTodos());
     }
   }, [status, dispatch]);
 
-  const filteredTodos = Array.isArray(todos) ? todos.filter((todo) =>
-    todo?.name?.toLowerCase().includes((searchTerm || '').toLowerCase())
-  ) : [];
+  const filteredTodos = Array.isArray(todos)
+    ? todos.filter((todo) =>
+        todo?.name?.toLowerCase().includes((searchTerm || "").toLowerCase())
+      )
+    : [];
 
   const handleToggle = (id: string) => {
-    dispatch(toggleTodo(id) as any);
+    dispatch(toggleTodo(id));
   };
 
   const handleDelete = (id: string) => {
-    dispatch(deleteTodo(id) as any);
+    dispatch(deleteTodo(id));
   };
 
   const handleEdit = (id: string, newName: string) => {
-    dispatch(editTodo({ id, name: newName }) as any);
+    dispatch(editTodo({ id, name: newName }));
   };
 
   const handleLogout = async () => {
@@ -50,6 +53,7 @@ const HomePageContainer = () => {
       console.error("Logout failed:", error);
     }
   };
+  
 
   if (status === "loading") {
     return <div>Loading...</div>;
