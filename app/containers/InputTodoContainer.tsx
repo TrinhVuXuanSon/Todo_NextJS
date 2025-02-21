@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useAppDispatch } from "../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { addTodo } from "../redux/todoSlice";
 import InputTodo from "../components/todo/InputTodo";
 
@@ -9,9 +9,11 @@ const InputTodoContainer = () => {
   const [text, setText] = useState("");
   const dispatch = useAppDispatch();
 
+  const userId = useAppSelector((state) => state.auth?.user);
+  
   const handleAdd = async () => {
-    if (text.trim()) {
-      await dispatch(addTodo(text));
+    if (text.trim() && userId) {
+      await dispatch(addTodo({ name: text, userId: userId.id as string }));
       setText("");
     }
   };

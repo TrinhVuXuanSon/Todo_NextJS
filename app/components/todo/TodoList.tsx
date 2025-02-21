@@ -2,22 +2,7 @@
 
 import TodoTable from "../ui/TodoTable";
 import Modal from "../ui/Modal";
-import { TodoProps } from "../../types/todo";
-
-interface TodoListViewProps {
-  todos: TodoProps[];
-  onToggle: (id: string) => void;
-  isEditModalOpen: boolean;
-  isDeleteModalOpen: boolean;
-  selectedTodo: { id: string; name: string } | null;
-  editedName: string;
-  onEditNameChange: (value: string) => void;
-  onEditClick: (todo: TodoProps) => void;
-  onDeleteClick: (todo: TodoProps) => void;
-  onEditSubmit: () => void;
-  onDeleteSubmit: () => void;
-  onCloseModals: () => void;
-}
+import { TodoListViewProps } from "../../types/todo";
 
 const TodoList = ({
   todos,
@@ -34,6 +19,10 @@ const TodoList = ({
 }: TodoListViewProps) => {
   const incompleteTodos = todos.filter((todo) => !todo.completed);
   const completedTodos = todos.filter((todo) => todo.completed);
+
+  console.log("Todos received in TodoList:", todos);
+  console.log("Incomplete todos:", incompleteTodos);
+  console.log("Completed todos:", completedTodos);
 
   return (
     <div className="space-y-8">

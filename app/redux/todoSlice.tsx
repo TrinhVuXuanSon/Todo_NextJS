@@ -1,113 +1,138 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { supabase } from "../lib/supabaseClient";
-import { TodoSliceProps } from "../types/todo";
+'use client';
 
-export const fetchTodos = createAsyncThunk("todos/fetchTodos", async () => {
-  const { data, error } = await supabase.from("todos").select("*");
-  if (error) throw error;
-  return data;
-});
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { TodoProps } from '@/app/types/todo';
+
+interface TodoState {
+  todos: TodoProps[];
+  loading: boolean;
+  error: string | null;
+  searchQuery: string;
+}
+
+const initialState: TodoState = {
+  todos: [],
+  loading: false,
+  error: null,
+  searchQuery: '',
+};
+
+export const fetchTodos = createAsyncThunk(
+  "todos/fetchTodos",
+  async (userId: string, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`/api/todos?userId=${userId}`);
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.error || "Failed to fetch todos");
+      return data;
+    } catch (error) {;
+      return rejectWithValue(error instanceof Error ? error.message : "Failed to fetch todos");
+    }
+  }
+);
+
 
 export const addTodo = createAsyncThunk(
-  "todos/addTodo",
-  async (name: string) => {
-    const { data, error } = await supabase
-      .from("todos")
-      .insert([{ name, completed: false }])
-      .select()
-      .single();
-    if (error) throw error;
-    return data;
+  'todos/addTodoAsync',
+  async ({ name, userId }: { name: string; userId: string }, { rejectWithValue }) => {
+    try {
+      const response = await fetch('/api/todos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, userId }),
+      });
+      if (!response.ok) throw new Error('Failed to add todo');
+      return await response.json();
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to add todo');
+    }
   }
 );
 
 export const toggleTodo = createAsyncThunk(
-  "todos/toggleTodo",
-  async (id: string) => {
-    const { data: currentTodo, error: fetchError } = await supabase
-      .from("todos")
-      .select("completed")
-      .eq("id", id)
-      .single();
-
-    if (fetchError || !currentTodo) throw new Error("Todo not found");
-
-    const { data, error } = await supabase
-      .from("todos")
-      .update({ completed: !currentTodo.completed })
-      .eq("id", id)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
+  'todos/toggleTodoAsync',
+  async ({ id, completed }: { id: string; completed: boolean }, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`/api/todos/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ completed: !completed }),
+      });
+      if (!response.ok) throw new Error('Failed to toggle todo');
+      return id;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to toggle todo');
+    }
   }
 );
 
-export const deleteTodo = createAsyncThunk("todos/deleteTodo", async (id: string) => {
-  const { error } = await supabase.from("todos").delete().eq("id", id);
-  if (error) throw error;
-  return id;
-});
+export const deleteTodo = createAsyncThunk(
+  'todos/deleteTodoAsync',
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`/api/todos/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to delete todo');
+      return id;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to delete todo');
+    }
+  }
+);
 
 export const editTodo = createAsyncThunk(
-  "todos/editTodo",
-  async ({ id, name }: { id: string; name: string }) => {
-    const { data, error } = await supabase
-      .from("todos")
-      .update({ name })
-      .eq("id", id)
-      .select()
-      .single();
-    if (error) throw error;
-    return data;
+  'todos/editTodoAsync',
+  async ({ id, name }: { id: string; name: string }, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`/api/todos/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name }),
+      });
+      if (!response.ok) throw new Error('Failed to edit todo');
+      return { id, name };
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Failed to edit todo');
+    }
   }
 );
 
-const initialState: TodoSliceProps = {
-  todos: [],
-  searchTerm: "",
-  status: "idle",
-  error: null,
-};
-
 const todoSlice = createSlice({
-  name: "todos",
+  name: 'todos',
   initialState,
   reducers: {
-    setSearchTerm: (state, action) => {
-      state.searchTerm = action.payload;
+    setSearchTerm: (state, action: PayloadAction<string>) => {
+      state.searchQuery = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchTodos.pending, (state) => {
-        state.status = "loading";
-      })
-      .addCase(fetchTodos.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.todos = action.payload;
-      })
-      .addCase(fetchTodos.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message ?? "Error fetching todos";
+      .addCase(addTodo.pending, (state) => {
+        state.loading = true;
       })
       .addCase(addTodo.fulfilled, (state, action) => {
+        state.loading = false;
         state.todos.unshift(action.payload);
       })
+      .addCase(addTodo.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
       .addCase(toggleTodo.fulfilled, (state, action) => {
-        const todo = state.todos.find((todo) => todo.id === action.payload.id);
+        const todo = state.todos.find((todo) => todo.id === action.payload);
         if (todo) {
-          todo.completed = action.payload.completed;
+          todo.completed = !todo.completed;
         }
       })
       .addCase(deleteTodo.fulfilled, (state, action) => {
         state.todos = state.todos.filter((todo) => todo.id !== action.payload);
       })
       .addCase(editTodo.fulfilled, (state, action) => {
-        const index = state.todos.findIndex((todo) => todo.id === action.payload.id);
-        if (index !== -1) {
-          state.todos[index] = action.payload;
+        const todo = state.todos.find((todo) => todo.id === action.payload.id);
+        if (todo) {
+          todo.name = action.payload.name;
         }
       });
   },

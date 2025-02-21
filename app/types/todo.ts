@@ -2,7 +2,6 @@ export interface TodoProps {
   id: string;
   name: string;
   completed: boolean;
-  created_at?: string;
 }
 
 export interface TodoItemProps {
@@ -90,4 +89,27 @@ export interface User {
 export interface AuthState {
   user: User | null;
   token: string | null;
+}
+
+export interface TodoListViewProps {
+  todos: TodoProps[];
+  onToggle: (id: string) => void;
+  isEditModalOpen: boolean;
+  isDeleteModalOpen: boolean;
+  selectedTodo: { id: string; name: string } | null;
+  editedName: string;
+  onEditNameChange: (value: string) => void;
+  onEditClick: (todo: TodoProps) => void;
+  onDeleteClick: (todo: TodoProps) => void;
+  onEditSubmit: () => void;
+  onDeleteSubmit: () => void;
+  onCloseModals: () => void;
+}
+
+export interface TodoTableProps {
+  todos: TodoProps[];
+  title: string;
+  onToggle: (id: string) => void;
+  onEdit: (todo: TodoProps) => void;
+  onDelete: (todo: TodoProps) => void;
 }

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
-import { setCredentials } from "../redux/authSlice";
+import { setCredentials } from "../../redux/authSlice";
 
 function LoginPage() {
   const [username, setUsername] = useState("");

@@ -1,6 +1,5 @@
 const Modal = ({
   isOpen,
-  onClose,
   title,
   children,
 }: {

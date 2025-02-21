@@ -1,17 +1,9 @@
 import { useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import DropdownMenu from "./Dropdown";
-import { TodoProps } from "../../types/todo";
+import { TodoTableProps, TodoProps } from "../../types/todo";
 
-interface TodoTableProps {
-  todos: TodoProps[];
-  title: string;
-  onToggle: (id: string) => void;
-  onEdit: (todo: TodoProps) => void;
-  onDelete: (todo: TodoProps) => void;
-}
-
-const TodoTable: React.FC<TodoTableProps> = ({ todos, title, onToggle, onEdit, onDelete }) => {
+const TodoTable: React.FC<TodoTableProps> = ({ todos, title, onEdit, onDelete }) => {
   const [dropdownOpenId, setDropdownOpenId] = useState<string | null>(null);
 
   const handleEdit = (todo: TodoProps) => {
@@ -44,7 +36,6 @@ const TodoTable: React.FC<TodoTableProps> = ({ todos, title, onToggle, onEdit, o
                 <input
                   type="checkbox"
                   checked={todo.completed}
-                  onChange={() => onToggle(todo.id)}
                   className="h-4 w-4 rounded border-gray-300"
                   title="checkbox"
                 />

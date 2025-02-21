@@ -35,7 +35,7 @@ const DetailsContainer = () => {
 
   const handleSave = async () => {
     if (editText.trim() && id) {
-      await dispatch(editTodo({ id, name: editText })).unwrap(); // 🔹 Dùng unwrap() để bắt lỗi
+      await dispatch(editTodo({ id, name: editText })).unwrap();
       router.push("/");
       setTimeout(() => {
         alert("Saved");
