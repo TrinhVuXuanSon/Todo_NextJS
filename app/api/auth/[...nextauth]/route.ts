@@ -32,14 +32,17 @@ const handler = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.user = user;
+        token.id = user.id;
       }
       return token;
     },
     async session({ session, token }) {
-      session.user = token.user as typeof session.user;
+      session.user = token as any;
       return session;
     },
+  },
+  session: {
+    strategy: "jwt",
   },
 });
 
