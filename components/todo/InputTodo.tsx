@@ -8,6 +8,7 @@ const InputTodoView = ({ text, onTextChange, onAdd }: InputTodoViewProps) => (
       onChange={onTextChange}
       className="flex-1 px-2 py-1 border rounded"
       placeholder="Add new todo"
+      onKeyDown={(e) => e.key === "Enter" && onAdd()}
     />
     <button
       onClick={onAdd}

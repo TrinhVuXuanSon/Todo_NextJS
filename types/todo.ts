@@ -2,6 +2,7 @@ export interface TodoProps {
   id: string;
   name: string;
   completed: boolean;
+  userId: string;
 }
 
 export interface TodoItemProps {
@@ -112,4 +113,17 @@ export interface TodoTableProps {
   onToggle: (id: string) => void;
   onEdit: (todo: TodoProps) => void;
   onDelete: (todo: TodoProps) => void;
+}
+
+export interface DashBoardProps {
+  onLogin: () => void;
+}
+
+export interface LoginProps {
+  username: string;
+  password: string;
+  error?: string;
+  onUsernameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onPasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }

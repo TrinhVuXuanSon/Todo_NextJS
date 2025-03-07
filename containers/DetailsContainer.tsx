@@ -44,7 +44,7 @@ const DetailsContainer = () => {
   };
 
   const handleDelete = async () => {
-    if (window.confirm("Are you sure you want to delete this todo?")) {
+    if (window.confirm("Có chắc xóa todo này?")) {
       await dispatch(deleteTodo(id)).unwrap();
       router.push("/");
       setTimeout(() => {

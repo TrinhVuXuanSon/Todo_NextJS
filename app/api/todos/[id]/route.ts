@@ -1,77 +1,136 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
-export async function GET(req: Request) {
+async function GET(req: Request) {
   try {
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { pathname } = new URL(req.url);
-    const id = pathname.split("/").pop(); // Lấy id từ URL
+    const id = pathname.split("/").pop();
 
     if (!id) {
-      return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+      return NextResponse.json({ error: "Id không hợp lệ" }, { status: 400 });
     }
 
-    const todo = await prisma.todos.findUnique({ where: { id } });
+    const todo = await prisma.todos.findFirst({
+      where: {
+        id,
+        userId: session.user.id,
+      },
+    });
+
     if (!todo) {
-      return NextResponse.json({ error: "Todo not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Không tìm thấy todo" },
+        { status: 404 }
+      );
     }
+
     return NextResponse.json(todo);
   } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to fetch todo" },
-      { status: 500 }
-    );
+    console.log(error);
+    return NextResponse.json({ error: "Không thể tải todo" }, { status: 500 });
   }
 }
 
-export async function PATCH(req: Request) {
+async function PATCH(req: Request) {
   try {
-    const { pathname } = new URL(req.url);
-    const id = pathname.split("/").pop(); // Lấy id từ URL
+    const session = await getServerSession(authOptions);
 
-    if (!id) {
-      return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+    if (!session || !session.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const todo = await prisma.todos.findUnique({ where: { id } });
+    const { pathname } = new URL(req.url);
+    const id = pathname.split("/").pop();
+
+    if (!id) {
+      return NextResponse.json({ error: "Id không hợp lệ" }, { status: 400 });
+    }
+
+    const todo = await prisma.todos.findFirst({
+      where: {
+        id,
+        userId: session.user.id,
+      },
+    });
+
     if (!todo) {
-      return NextResponse.json({ error: "Todo not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Không tìm thấy todo" },
+        { status: 404 }
+      );
     }
 
     const data = await req.json();
-    const updateData: any = {};
+    const updateData: { name?: string; completed?: boolean } = {};
 
     if (data.name !== undefined) updateData.name = data.name;
     if (data.completed !== undefined) updateData.completed = data.completed;
 
     const updatedTodo = await prisma.todos.update({
-      where: { id },
+      where: {
+        id,
+      },
       data: updateData,
     });
 
     return NextResponse.json(updatedTodo);
   } catch (error) {
+    console.log(error);
     return NextResponse.json(
-      { error: "Failed to update todo" },
+      { error: "Không cập nhật được todo" },
       { status: 500 }
     );
   }
 }
 
-export async function DELETE(req: Request) {
+async function DELETE(req: Request) {
   try {
-    const { pathname } = new URL(req.url);
-    const id = pathname.split("/").pop(); // Lấy id từ URL
+    const session = await getServerSession(authOptions);
 
-    if (!id) {
-      return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+    if (!session || !session.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await prisma.todos.delete({ where: { id } });
-    return NextResponse.json({ message: "Todo deleted" });
+    const { pathname } = new URL(req.url);
+    const id = pathname.split("/").pop();
+
+    if (!id) {
+      return NextResponse.json({ error: "Id không hợp lệ" }, { status: 400 });
+    }
+
+    const todo = await prisma.todos.findFirst({
+      where: {
+        id,
+        userId: session.user.id,
+      },
+    });
+
+    if (!todo) {
+      return NextResponse.json(
+        { error: "Không tìm thấy todo" },
+        { status: 404 }
+      );
+    }
+
+    await prisma.todos.deleteMany({
+      where: {
+        id,
+        userId: session.user.id,
+      },
+    });
+    return NextResponse.json({ message: "Đã xóa todo" });
   } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to delete todo" },
-      { status: 500 }
-    );
+    console.log(error);
+    return NextResponse.json({ error: "Không xóa được todo" }, { status: 500 });
   }
 }
+
+export { GET, PATCH, DELETE };

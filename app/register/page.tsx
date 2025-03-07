@@ -1,49 +1,59 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { signIn } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-export default function Login() {
+export default function Register() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState("");
 
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const registered = searchParams.get("registered");
-  const callbackUrl = searchParams.get("callbackUrl") || "/home";
-
-  useEffect(() => {
-    if (registered) {
-      setSuccess("Đăng ký thành công! Vui lòng đăng nhập.");
-    }
-  }, [registered]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
+    if (password !== confirmPassword) {
+      setError("Mật khẩu xác nhận không khớp");
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Mật khẩu phải có ít nhất 6 ký tự");
+      setLoading(false);
+      return;
+    }
+
     try {
-      const result = await signIn("credentials", {
-        username,
-        password,
-        redirect: false,
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+          password,
+        }),
       });
 
-      if (result?.error) {
-        setError("Tên đăng nhập hoặc mật khẩu không đúng");
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || "Đăng ký thất bại");
         setLoading(false);
         return;
       }
 
-      router.push(callbackUrl);
+      router.push("/login?registered=true");
     } catch (error) {
-      setError("Đã xảy ra lỗi khi đăng nhập");
+      console.error("Registration error:", error);
+      setError("Đã xảy ra lỗi khi đăng ký");
       setLoading(false);
     }
   };
@@ -53,20 +63,14 @@ export default function Login() {
       <div className="w-full max-w-md bg-white rounded-lg shadow-md overflow-hidden">
         <div className="px-6 py-8">
           <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">
-            Đăng nhập
+            Đăng ký tài khoản
           </h2>
           <p className="text-sm text-gray-600 text-center mb-6">
-            Đăng nhập để quản lý danh sách công việc của bạn
+            Tạo tài khoản mới để sử dụng ứng dụng
           </p>
-          {success && (
-            <div className="mb-4 p-2 bg-green-100 text-green-700 rounded">
-              {success}
-            </div>
-          )}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label
-                htmlFor="username"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
                 Tên đăng nhập
@@ -95,7 +99,25 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Nhập mật khẩu"
+                placeholder="Nhập mật khẩu (ít nhất 6 ký tự)"
+                required
+                disabled={loading}
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Xác nhận mật khẩu
+              </label>
+              <input
+                id="confirmPassword"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Nhập lại mật khẩu"
                 required
                 disabled={loading}
               />
@@ -106,15 +128,15 @@ export default function Login() {
               className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
               disabled={loading}
             >
-              {loading ? "Đang đăng nhập..." : "Đăng nhập"}
+              {loading ? "Đang đăng ký..." : "Đăng ký"}
             </button>
           </form>
         </div>
         <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 text-center">
           <p className="text-sm text-gray-500">
-            Chưa có tài khoản?{" "}
-            <Link href="/register" className="text-blue-600 hover:underline">
-              Đăng ký
+            Đã có tài khoản?{" "}
+            <Link href="/login" className="text-blue-600 hover:underline">
+              Đăng nhập
             </Link>
           </p>
         </div>

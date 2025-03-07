@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { TodoProps, TodoSliceProps } from "@/types/todo";
 
@@ -38,13 +38,8 @@ export const editTodo = createAsyncThunk<
   TodoProps,
   { id: string; name: string }
 >("todos/editTodo", async ({ id, name }) => {
-  const response = await fetch(`/api/todos/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name }),
-  });
-  if (!response.ok) throw new Error("Failed to edit todo");
-  return (await response.json()) as TodoProps;
+  const response = await axios.patch(`/api/todos/${id}`, { name });
+  return response.data as TodoProps;
 });
 
 const initialState: TodoSliceProps = {
@@ -61,19 +56,22 @@ const todoSlice = createSlice({
     setSearchTerm: (state, action) => {
       state.searchTerm = action.payload;
     },
+    clearTodos: (state) => {
+      state.todos = [];
+      state.searchTerm = "";
+      state.status = "idle";
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchTodos.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(
-        fetchTodos.fulfilled,
-        (state, action) => {
-          state.status = "succeeded";
-          state.todos = action.payload;
-        }
-      )
+      .addCase(fetchTodos.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.todos = action.payload;
+      })
       .addCase(fetchTodos.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message ?? "Error fetching todos";
@@ -81,33 +79,25 @@ const todoSlice = createSlice({
       .addCase(addTodo.fulfilled, (state, action) => {
         state.todos.unshift(action.payload);
       })
-      .addCase(
-        toggleTodo.fulfilled,
-        (state, action) => {
-          const todo = state.todos.find(
-            (todo) => todo.id === action.payload.id
-          );
-          if (todo) {
-            todo.completed = action.payload.completed;
-          }
+      .addCase(toggleTodo.fulfilled, (state, action) => {
+        const todo = state.todos.find((todo) => todo.id === action.payload.id);
+        if (todo) {
+          todo.completed = action.payload.completed;
         }
-      )
+      })
       .addCase(deleteTodo.fulfilled, (state, action) => {
         state.todos = state.todos.filter((todo) => todo.id !== action.payload);
       })
-      .addCase(
-        editTodo.fulfilled,
-        (state, action) => {
-          const index = state.todos.findIndex(
-            (todo) => todo.id === action.payload.id
-          );
-          if (index !== -1) {
-            state.todos[index].name = action.payload.name;
-          }
+      .addCase(editTodo.fulfilled, (state, action) => {
+        const index = state.todos.findIndex(
+          (todo) => todo.id === action.payload.id
+        );
+        if (index !== -1) {
+          state.todos[index] = action.payload;
         }
-      );
+      });
   },
 });
 
-export const { setSearchTerm } = todoSlice.actions;
+export const { setSearchTerm, clearTodos } = todoSlice.actions;
 export default todoSlice.reducer;

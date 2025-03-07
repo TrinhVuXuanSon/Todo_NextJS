@@ -1,32 +1,62 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
-export async function PATCH(req: Request) {
+
+async function PATCH(req: Request) {
   try {
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { pathname } = new URL(req.url);
     const segments = pathname.split("/");
-    const id = segments[segments.length - 2]; // Lấy id trước "toggle"
+    const id = segments[segments.length - 2];
 
     if (!id) {
-      return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+      return NextResponse.json({ error: "Id không hợp lệ" }, { status: 400 });
     }
 
-    const todo = await prisma.todos.findUnique({ where: { id } });
+    const todo = await prisma.todos.findFirst({
+      where: {
+        id,
+        userId: session.user.id,
+      },
+    });
 
     if (!todo) {
-      return NextResponse.json({ error: "Todo not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Không tìm thấy todo" },
+        { status: 404 }
+      );
     }
 
-    const updatedTodo = await prisma.todos.update({
-      where: { id },
+    await prisma.todos.updateMany({
+      where: {
+        id,
+        userId: session.user.id,
+      },
       data: { completed: !todo.completed },
+    });
+
+    const updatedTodo = await prisma.todos.findFirst({
+      where: {
+        id,
+        userId: session.user.id,
+      },
     });
 
     return NextResponse.json(updatedTodo);
   } catch (error) {
+    console.log(error);
     return NextResponse.json(
-      { error: "Failed to toggle todo" },
+      { error: "Không thể toggle todo" },
       { status: 500 }
     );
   }
 }
+
+export { PATCH };
