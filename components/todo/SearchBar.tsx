@@ -7,7 +7,7 @@ const SearchBar = ({ searchTerm, onSearchChange }: SearchBarViewProps) => (
       value={searchTerm}
       onChange={onSearchChange}
       placeholder="Search todo"
-      className="w-full px-2 py-1 border rounded"
+      className="w-full px-2 py-1 border rounded text-black"
     />
   </div>
 );
