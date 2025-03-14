@@ -10,10 +10,10 @@ export const fetchTodos = createAsyncThunk<TodoProps[], void>(
   }
 );
 
-export const addTodo = createAsyncThunk<TodoProps, string>(
+export const addTodo = createAsyncThunk<TodoProps, { name: string; category?: string }>(
   "todos/addTodo",
-  async (name) => {
-    const response = await axios.post("/api/todos", { name, completed: false });
+  async (todoData) => {
+    const response = await axios.post("/api/todos", todoData);
     return response.data as TodoProps;
   }
 );
@@ -36,9 +36,9 @@ export const deleteTodo = createAsyncThunk<string, string>(
 
 export const editTodo = createAsyncThunk<
   TodoProps,
-  { id: string; name: string }
->("todos/editTodo", async ({ id, name }) => {
-  const response = await axios.patch(`/api/todos/${id}`, { name });
+  { id: string; name: string; category?: string }
+>("todos/editTodo", async ({ id, name, category }) => {
+  const response = await axios.patch(`/api/todos/${id}`, { name, category });
   return response.data as TodoProps;
 });
 

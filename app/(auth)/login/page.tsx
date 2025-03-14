@@ -43,6 +43,7 @@ export default function Login() {
 
       router.push(callbackUrl);
     } catch (error) {
+      console.error("Login error:", error);
       setError("Đã xảy ra lỗi khi đăng nhập");
       setLoading(false);
     }

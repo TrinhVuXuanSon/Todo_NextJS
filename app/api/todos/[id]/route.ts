@@ -69,15 +69,14 @@ async function PATCH(req: Request) {
     }
 
     const data = await req.json();
-    const updateData: { name?: string; completed?: boolean } = {};
+    const updateData: { name?: string; category?: string; completed?: boolean } = {};
 
     if (data.name !== undefined) updateData.name = data.name;
+    if (data.category !== undefined) updateData.category = data.category; // Hỗ trợ cập nhật category
     if (data.completed !== undefined) updateData.completed = data.completed;
 
     const updatedTodo = await prisma.todos.update({
-      where: {
-        id,
-      },
+      where: { id },
       data: updateData,
     });
 

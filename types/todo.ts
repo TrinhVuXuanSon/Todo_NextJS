@@ -1,6 +1,7 @@
 export interface TodoProps {
   id: string;
   name: string;
+  category: string;
   completed: boolean;
   userId: string;
 }
@@ -16,7 +17,7 @@ export interface TodoListProps {
   todos: TodoProps[];
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
-  onEdit: (id: string, newName: string) => void;
+  onEdit: (id: string, newName: string, newCategory: string) => void;
 }
 
 export interface InputTodoProps {
@@ -72,8 +73,13 @@ export interface SearchBarViewProps {
 
 export interface InputTodoViewProps {
   text: string;
+  category: string;
+  isModalOpen: boolean;
   onTextChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onCategoryChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onAdd: () => void;
+  onOpenModal: () => void;
+  onCloseModal: () => void;
 }
 
 export interface TodoItemViewProps {
@@ -99,7 +105,9 @@ export interface TodoListViewProps {
   isDeleteModalOpen: boolean;
   selectedTodo: { id: string; name: string } | null;
   editedName: string;
+  editedCategory: string;
   onEditNameChange: (value: string) => void;
+  onEditCategoryChange: (value: string) => void;
   onEditClick: (todo: TodoProps) => void;
   onDeleteClick: (todo: TodoProps) => void;
   onEditSubmit: () => void;

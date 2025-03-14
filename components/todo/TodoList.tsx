@@ -10,7 +10,9 @@ const TodoList = ({
   isEditModalOpen,
   isDeleteModalOpen,
   editedName,
+  editedCategory,
   onEditNameChange,
+  onEditCategoryChange,
   onEditClick,
   onDeleteClick,
   onEditSubmit,
@@ -51,6 +53,22 @@ const TodoList = ({
               onChange={(e) => onEditNameChange(e.target.value)}
               className="col-span-3 border rounded px-3 py-2"
             />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4 mt-2">
+            <label htmlFor="category" className="text-right">
+              Category
+            </label>
+            <select
+              id="category"
+              value={editedCategory}
+              onChange={(e) => onEditCategoryChange(e.target.value)}
+              className="col-span-3 border rounded px-3 py-2"
+            >
+              <option value="">Select Category</option>
+              <option value="Work">Work</option>
+              <option value="Personal">Personal</option>
+              <option value="High Priority">High Priority</option>
+            </select>
           </div>
         </div>
         <div className="flex justify-end gap-2">

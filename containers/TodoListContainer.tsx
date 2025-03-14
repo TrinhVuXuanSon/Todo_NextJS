@@ -17,10 +17,12 @@ const TodoListContainer = ({
     name: string;
   } | null>(null);
   const [editedName, setEditedName] = useState("");
+  const [editCategory, setEditCategory] = useState("");
 
   const handleEditClick = (todo: TodoProps) => {
     setSelectedTodo(todo);
     setEditedName(todo.name);
+    setEditCategory(todo.category || "");
     setIsEditModalOpen(true);
   };
 
@@ -31,7 +33,7 @@ const TodoListContainer = ({
 
   const handleEditSubmit = () => {
     if (selectedTodo && editedName.trim()) {
-      onEdit(selectedTodo.id, editedName);
+      onEdit(selectedTodo.id, editedName, editCategory);
       setIsEditModalOpen(false);
       setSelectedTodo(null);
     }
@@ -59,7 +61,9 @@ const TodoListContainer = ({
       isDeleteModalOpen={isDeleteModalOpen}
       selectedTodo={selectedTodo}
       editedName={editedName}
+      editedCategory={editCategory}
       onEditNameChange={setEditedName}
+      onEditCategoryChange={setEditCategory}
       onEditClick={handleEditClick}
       onDeleteClick={handleDeleteClick}
       onEditSubmit={handleEditSubmit}
