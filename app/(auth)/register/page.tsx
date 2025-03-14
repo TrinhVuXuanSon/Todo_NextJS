@@ -59,19 +59,19 @@ export default function Register() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-md overflow-hidden">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
         <div className="px-6 py-8">
-          <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">
+          <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-white mb-2">
             Đăng ký tài khoản
           </h2>
-          <p className="text-sm text-gray-600 text-center mb-6">
+          <p className="text-sm text-gray-600 dark:text-gray-300 text-center mb-6">
             Tạo tài khoản mới để sử dụng ứng dụng
           </p>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
               >
                 Tên đăng nhập
               </label>
@@ -80,7 +80,7 @@ export default function Register() {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 dark:placeholder-gray-300"
                 placeholder="Nhập tên đăng nhập của bạn"
                 required
                 disabled={loading}
@@ -89,7 +89,7 @@ export default function Register() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
               >
                 Mật khẩu
               </label>
@@ -98,7 +98,7 @@ export default function Register() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 dark:placeholder-gray-300"
                 placeholder="Nhập mật khẩu (ít nhất 6 ký tự)"
                 required
                 disabled={loading}
@@ -107,7 +107,7 @@ export default function Register() {
             <div>
               <label
                 htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
               >
                 Xác nhận mật khẩu
               </label>
@@ -116,26 +116,26 @@ export default function Register() {
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 dark:placeholder-gray-300"
                 placeholder="Nhập lại mật khẩu"
                 required
                 disabled={loading}
               />
             </div>
-            {error && <p className="text-red-500 text-sm">{error}</p>}
+            {error && <p className="text-red-500 dark:text-red-400 text-sm">{error}</p>}
             <button
               type="submit"
-              className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+              className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 text-white font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
               disabled={loading}
             >
               {loading ? "Đang đăng ký..." : "Đăng ký"}
             </button>
           </form>
         </div>
-        <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 text-center">
-          <p className="text-sm text-gray-500">
+        <div className="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600 text-center">
+          <p className="text-sm text-gray-500 dark:text-gray-300">
             Đã có tài khoản?{" "}
-            <Link href="/login" className="text-blue-600 hover:underline">
+            <Link href="/login" className="text-blue-600 dark:text-blue-400 hover:underline">
               Đăng nhập
             </Link>
           </p>

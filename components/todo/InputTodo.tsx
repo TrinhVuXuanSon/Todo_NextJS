@@ -9,13 +9,13 @@ const InputTodoView = ({
   onOpenModal,
   onCloseModal,
   category,
-  onCategoryChange
+  onCategoryChange,
 }: InputTodoViewProps) => (
   <div className="flex gap-2">
     <button
       onClick={onOpenModal}
       title="Open Modal"
-      className="px-3 py-1 bg-blue-500 text-white rounded"
+      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
     >
       Add New Todo
     </button>
@@ -25,7 +25,7 @@ const InputTodoView = ({
           type="text"
           value={text}
           onChange={onTextChange}
-          className="w-full px-3 py-2 border rounded"
+          className="w-full px-3 py-2 border rounded bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white placeholder-gray-400 dark:placeholder-gray-300"
           placeholder="Enter new todo"
           onKeyDown={(e) => e.key === "Enter" && onAdd()}
         />
@@ -37,7 +37,7 @@ const InputTodoView = ({
         id="category"
         value={category}
         onChange={onCategoryChange}
-        className="w-full px-3 py-2 border rounded mb-2"
+        className="w-full px-3 py-2 border rounded mb-2 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
       >
         <option value="">Select Category</option>
         <option value="Work">Work</option>
@@ -47,13 +47,13 @@ const InputTodoView = ({
       <div className="flex justify-end gap-2">
         <button
           onClick={onCloseModal}
-          className="px-4 py-2 border rounded hover:bg-gray-50"
+          className="px-4 py-2 border rounded hover:bg-gray-50 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700"
         >
           Quay lại
         </button>
         <button
           onClick={onAdd}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
         >
           Add
         </button>

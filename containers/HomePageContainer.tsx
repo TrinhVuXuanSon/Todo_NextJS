@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
+import axios from "axios";
 import useDebounce from "@/hooks/useDebounce";
 import {
   fetchTodos,
@@ -15,8 +16,6 @@ import { logout } from "@/redux/authSlice";
 import HomePage from "@/components/todo/HomePage";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
-import axios from "axios";
-
 const HomePageContainer = () => {
   const { todos, searchTerm, status, error } = useAppSelector(
     (state) => state.todos
@@ -27,18 +26,27 @@ const HomePageContainer = () => {
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
-
-  const [theme, setTheme] = useState<"light" | "dark">("light")
+  const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
     if (session?.user?.id) {
       dispatch(fetchTodos());
-      axios.get("/api/todos").then((res) => {
-        const userTheme =
-          res.data.find((todo) => todo.userId === session.user.id)?.user?.theme || "light";
-        setTheme(userTheme);
-        document.documentElement.classList.toggle("dark", userTheme === "dark");
-      });
+      axios
+        .get("/api/user/profile")
+        .then((res) => {
+          const userTheme =
+            (res.data as { theme?: "light" | "dark" }).theme || "light";
+          setTheme(userTheme);
+          document.documentElement.classList.toggle(
+            "dark",
+            userTheme === "dark"
+          );
+        })
+        .catch((err) => {
+          console.error("Error fetching theme:", err);
+          setTheme("light");
+          document.documentElement.classList.toggle("dark", false);
+        });
     }
   }, [dispatch, session?.user?.id]);
 
@@ -54,7 +62,11 @@ const HomePageContainer = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
     document.documentElement.classList.toggle("dark", newTheme === "dark");
-    await axios.patch("/api/user/theme", { theme: newTheme });
+    try {
+      await axios.patch("/api/user/theme", { theme: newTheme });
+    } catch (error) {
+      console.error("Error updating theme:", error);
+    }
   };
 
   const filteredTodos = Array.isArray(todos)
